@@ -10,24 +10,26 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo "🔄 Clonando el repositorio desde GitHub..."
+                echo "🔄 Clonando el repo desde GitHub..."
                 git branch: 'main',
                     url: 'https://github.com/Alephdjcs/devops-challenge.git',
                     credentialsId: 'github-token'
             }
         }
 
+        stage('Pre-Build Script') {
+            steps {
+                echo "🛠 Ejecutando Pre-Build script..."
+                sh 'bash jenkins/scripts/pre_build.sh'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    try {
-                        echo "🔨 Construyendo la imagen Docker..."
-                        // Construye la imagen con la etiqueta del build
-                        docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "./application")
-                        echo "✅ Imagen Docker construida: ${DOCKER_IMAGE}:${BUILD_TAG}"
-                    } catch (err) {
-                        error "❌ Falló la construcción de la imagen Docker: ${err}"
-                    }
+                    echo "🔨 Construyendo la imagen Docker..."
+                    docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "./application")
+                    echo "✅ Imagen Docker construida: ${DOCKER_IMAGE}:${BUILD_TAG}"
                 }
             }
         }
@@ -40,18 +42,20 @@ pipeline {
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS'
                     )]) {
-                        try {
-                            echo "🚀 Logueando en Docker Hub..."
-                            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-
-                            echo "📤 Subiendo la imagen a Docker Hub..."
-                            sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
-                            echo "✅ Imagen subida correctamente: ${DOCKER_IMAGE}:${BUILD_TAG}"
-                        } catch (err) {
-                            error "❌ Falló el login o push a Docker Hub: ${err}"
-                        }
+                        echo "🚀 Logueando en Docker Hub..."
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                        echo "📤 Subiendo la imagen a Docker Hub..."
+                        sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
+                        echo "✅ Imagen subida correctamente: ${DOCKER_IMAGE}:${BUILD_TAG}"
                     }
                 }
+            }
+        }
+
+        stage('Post-Build Script') {
+            steps {
+                echo "🧹 Ejecutando Post-Build script..."
+                sh 'bash jenkins/scripts/post_build.sh'
             }
         }
     }
@@ -65,3 +69,4 @@ pipeline {
         }
     }
 }
+

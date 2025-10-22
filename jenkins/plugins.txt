@@ -1,7 +1,13 @@
-pipeline-model-definition
-docker-workflow
-kubernetes
-git
-credentials-binding
-workflow-aggregator
-blueocean
+Git plugin
+
+Pipeline
+
+Docker Pipeline
+
+Credentials Binding Plugin
+
+Kubernetes CLI Plugin (o Kubernetes si lo prefieres)
+
+Blue Ocean (opcional, UI)
+
+Warnings / Warnings Next Generation (opcional)
