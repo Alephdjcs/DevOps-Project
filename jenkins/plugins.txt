@@ -1,0 +1,7 @@
+pipeline-model-definition
+docker-workflow
+kubernetes
+git
+credentials-binding
+workflow-aggregator
+blueocean
