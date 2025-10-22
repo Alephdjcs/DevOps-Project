@@ -2,42 +2,51 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USERNAME = 'dcerdassan'
-        DOCKERHUB_PASSWORD = 'Dan.2001'
+        DOCKER_IMAGE = "dcerdassan/devopssnapfinance"
+        BUILD_TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                checkout scm
+                echo "🔄 Clonando el repo desde GitHub..."
+                git branch: 'main',
+                    url: 'https://github.com/Alephdjcs/devops-challenge.git',
+                    credentialsId: 'github-token'
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                sh './jenkins/scripts/build.sh'
+                script {
+                    echo "🔨 Construyendo la imagen Docker..."
+                    docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "./application")
+                }
             }
         }
 
-        stage('Test') {
+        stage('Docker Login & Push') {
             steps {
-                sh './jenkins/scripts/test.sh'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh './jenkins/scripts/deploy.sh'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    echo "🚀 Logueando y subiendo la imagen a Docker Hub..."
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
+                }
             }
         }
     }
 
     post {
         success {
-            echo "✅ Deployment successful!"
+            echo "✅ Imagen construida y subida correctamente a Docker Hub"
         }
         failure {
-            echo "❌ Build failed!"
+            echo "❌ Falló el pipeline"
         }
     }
 }
