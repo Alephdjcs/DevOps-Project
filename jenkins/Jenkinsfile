@@ -10,7 +10,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo "🔄 Clonando el repo desde GitHub..."
+                echo "🔄 Clonando el repositorio desde GitHub..."
                 git branch: 'main',
                     url: 'https://github.com/Alephdjcs/devops-challenge.git',
                     credentialsId: 'github-token'
@@ -20,22 +20,37 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo "🔨 Construyendo la imagen Docker..."
-                    docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "./application")
+                    try {
+                        echo "🔨 Construyendo la imagen Docker..."
+                        // Construye la imagen con la etiqueta del build
+                        docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "./application")
+                        echo "✅ Imagen Docker construida: ${DOCKER_IMAGE}:${BUILD_TAG}"
+                    } catch (err) {
+                        error "❌ Falló la construcción de la imagen Docker: ${err}"
+                    }
                 }
             }
         }
 
         stage('Docker Login & Push') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    echo "🚀 Logueando y subiendo la imagen a Docker Hub..."
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        try {
+                            echo "🚀 Logueando en Docker Hub..."
+                            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+
+                            echo "📤 Subiendo la imagen a Docker Hub..."
+                            sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
+                            echo "✅ Imagen subida correctamente: ${DOCKER_IMAGE}:${BUILD_TAG}"
+                        } catch (err) {
+                            error "❌ Falló el login o push a Docker Hub: ${err}"
+                        }
+                    }
                 }
             }
         }
@@ -43,10 +58,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Imagen construida y subida correctamente a Docker Hub"
+            echo "🎉 Pipeline completado exitosamente!"
         }
         failure {
-            echo "❌ Falló el pipeline"
+            echo "⚠️ Pipeline falló. Revisa los logs."
         }
     }
 }
