@@ -10,8 +10,8 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo "🔄 Clonando el repo desde GitHub..."
-                git branch: 'main',
+                echo "🔄 Clonando el repo desde GitHub (rama Prod)..."
+                git branch: 'Prod',
                     url: 'https://github.com/Alephdjcs/devops-challenge.git',
                     credentialsId: 'github-token'
             }
@@ -20,7 +20,7 @@ pipeline {
         stage('Pre-Build Script') {
             steps {
                 echo "🛠 Ejecutando Pre-Build script..."
-                sh 'bash jenkins/scripts/pre_build.sh'
+                sh 'bash ${WORKSPACE}/jenkins/scripts/pre_build.sh'
             }
         }
 
@@ -44,6 +44,7 @@ pipeline {
                     )]) {
                         echo "🚀 Logueando en Docker Hub..."
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+
                         echo "📤 Subiendo la imagen a Docker Hub..."
                         sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
                         echo "✅ Imagen subida correctamente: ${DOCKER_IMAGE}:${BUILD_TAG}"
@@ -54,8 +55,15 @@ pipeline {
 
         stage('Post-Build Script') {
             steps {
-                echo "🧹 Ejecutando Post-Build script..."
-                sh 'bash jenkins/scripts/post_build.sh'
+                echo "🛠 Ejecutando Post-Build script..."
+                sh 'bash ${WORKSPACE}/jenkins/scripts/post_build.sh'
+            }
+        }
+
+        stage('Debug') {
+            steps {
+                echo "🔍 Verificando estructura de archivos en workspace..."
+                sh 'ls -R ${WORKSPACE}/jenkins'
             }
         }
     }
@@ -69,4 +77,3 @@ pipeline {
         }
     }
 }
-
