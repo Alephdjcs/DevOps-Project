@@ -1,15 +1,20 @@
 #!/bin/bash
 # Pre-Build Script
-# Ejecutado antes de construir la imagen Docker
-# Verifica que los archivos estén en orden y limpia caches si es necesario
+# This script is executed before building the Docker image.
+# It checks that required files exist and cleans temporary files if necessary.
 
-echo "🔹 Pre-Build: Comprobando estructura de archivos..."
+# Step 1: Verify that the expected directory structure exists.
+# If the critical directory './application/src/web' is missing, exit the build with an error.
+echo "Pre-Build: Checking file structure..."
 if [ ! -d "./application/src/web" ]; then
-    echo "❌ Error: No se encontró la carpeta ./application/src/web"
+    echo "Error: Required directory './application/src/web' not found."
     exit 1
 fi
 
-echo "🔹 Limpiando archivos temporales..."
+# Step 2: Clean up temporary files to avoid including unnecessary files in the Docker image.
+# Deletes all files with the '.tmp' extension under './application/src/web'.
+echo "Pre-Build: Cleaning temporary files..."
 find ./application/src/web -name '*.tmp' -type f -delete
 
-echo "🔹 Pre-Build listo ✅"
+# Step 3: Indicate that the pre-build steps completed successfully.
+echo "Pre-Build completed successfully."
