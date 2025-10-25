@@ -14,7 +14,7 @@ pipeline {
                 deleteDir()  // Limpia todo el workspace antes del checkout
                 git branch: 'UAT',
                     url: 'https://github.com/Alephdjcs/devops-challenge.git',
-                    credentialsId: 'github-tokenn'
+                    credentialsId: 'github-token'
             }
         }
 
