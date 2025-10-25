@@ -8,16 +8,10 @@ pipeline {
 
     stages {
 
-        stage('Clean Workspace') {
-            steps {
-                echo "Limpiando workspace..."
-                deleteDir()
-            }
-        }
-
         stage('Checkout') {
             steps {
-                echo "Clonando el repo desde GitHub (rama UAT)..."
+                echo "Limpiando workspace y clonando repo desde GitHub (rama UAT)..."
+                deleteDir()  // Limpia todo el workspace antes del checkout
                 git branch: 'UAT',
                     url: 'https://github.com/Alephdjcs/devops-challenge.git',
                     credentialsId: 'github-token'
@@ -35,7 +29,7 @@ pipeline {
             steps {
                 script {
                     echo "Construyendo la imagen Docker..."
-                    sh "docker build -t ${DOCKER_IMAGE}:${BUILD_TAG} ./application"
+                    docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "./application")
                     echo "Imagen Docker construida: ${DOCKER_IMAGE}:${BUILD_TAG}"
                 }
             }
