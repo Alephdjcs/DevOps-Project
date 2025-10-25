@@ -10,8 +10,8 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo "Limpiando workspace y clonando repo desde GitHub (rama UAT)..."
-                deleteDir()  // Limpia todo el workspace antes del checkout
+                echo "Cleaning workspace and cloning repo from GitHub (UAT branch)..."
+                deleteDir()  // Cleans the entire workspace before checkout
                 git branch: 'UAT',
                     url: 'https://github.com/Alephdjcs/devops-challenge.git',
                     credentialsId: 'github-token'
@@ -20,7 +20,7 @@ pipeline {
 
         stage('Pre-Build Script') {
             steps {
-                echo "Ejecutando Pre-Build script..."
+                echo "Running Pre-Build script..."
                 sh 'bash ${WORKSPACE}/jenkins/scripts/pre_build.sh'
             }
         }
@@ -28,9 +28,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo "Construyendo la imagen Docker..."
+                    echo "Building Docker image..."
                     docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "./application")
-                    echo "Imagen Docker construida: ${DOCKER_IMAGE}:${BUILD_TAG}"
+                    echo "Docker image built: ${DOCKER_IMAGE}:${BUILD_TAG}"
                 }
             }
         }
@@ -43,12 +43,12 @@ pipeline {
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS'
                     )]) {
-                        echo "Logueando en Docker Hub..."
+                        echo "Logging in to Docker Hub..."
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
 
-                        echo "Subiendo la imagen a Docker Hub..."
+                        echo "Pushing the image to Docker Hub..."
                         sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
-                        echo "Imagen subida correctamente: ${DOCKER_IMAGE}:${BUILD_TAG}"
+                        echo "Image successfully pushed: ${DOCKER_IMAGE}:${BUILD_TAG}"
                     }
                 }
             }
@@ -56,14 +56,14 @@ pipeline {
 
         stage('Post-Build Script') {
             steps {
-                echo "Ejecutando Post-Build script..."
+                echo "Running Post-Build script..."
                 sh 'bash ${WORKSPACE}/jenkins/scripts/post_build.sh'
             }
         }
 
         stage('Debug') {
             steps {
-                echo "Verificando estructura de archivos en workspace..."
+                echo "Checking file structure in workspace..."
                 sh 'ls -R ${WORKSPACE}/jenkins'
             }
         }
@@ -71,10 +71,10 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completado exitosamente!"
+            echo "Pipeline completed successfully!"
         }
         failure {
-            echo "Pipeline falló. Revisa los logs."
+            echo "Pipeline failed. Check the logs."
         }
     }
 }
