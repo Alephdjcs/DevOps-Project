@@ -10,8 +10,8 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo "Clonando el repo desde GitHub (rama Prod)..."
-                git branch: 'Prod',
+                echo "Clonando el repo desde GitHub (rama UAT)..."
+                git branch: 'UAT',
                     url: 'https://github.com/Alephdjcs/devops-challenge.git',
                     credentialsId: 'github-token'
             }
