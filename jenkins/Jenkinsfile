@@ -8,6 +8,13 @@ pipeline {
 
     stages {
 
+        stage('Clean Workspace') {
+            steps {
+                echo "Limpiando workspace..."
+                deleteDir()
+            }
+        }
+
         stage('Checkout') {
             steps {
                 echo "Clonando el repo desde GitHub (rama UAT)..."
@@ -28,7 +35,7 @@ pipeline {
             steps {
                 script {
                     echo "Construyendo la imagen Docker..."
-                    docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "./application")
+                    sh "docker build -t ${DOCKER_IMAGE}:${BUILD_TAG} ./application"
                     echo "Imagen Docker construida: ${DOCKER_IMAGE}:${BUILD_TAG}"
                 }
             }
