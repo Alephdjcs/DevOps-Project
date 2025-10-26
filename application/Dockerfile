@@ -1,31 +1,30 @@
 # ------------------------------------------------------------------------------
-# Dockerfile - Versión local (solo para pruebas previas a Jenkins)
+# Dockerfile – Local Version (for pre-Jenkins testing only)
 # ------------------------------------------------------------------------------
-# ⚠️ NOTA IMPORTANTE:
-# Este Dockerfile fue utilizado únicamente para pruebas locales iniciales
-# antes de automatizar el proceso de build e integración continua con Jenkins.
-# No se usa en el pipeline de producción actual.
-# Se mantiene aquí como referencia técnica y ejemplo de buenas prácticas.
+# ⚠️ IMPORTANT NOTE:
+# This Dockerfile was used exclusively for initial local testing
+# before automating the build and continuous integration process with Jenkins.
+# It is not used in the current production pipeline.
+# It is kept here as a technical reference and an example of best practices.
 # ------------------------------------------------------------------------------
 
-# Imagen base mínima de NGINX (versión fija para estabilidad)
+# Minimal NGINX base image (fixed version for stability)
 FROM nginx:1.27.0-alpine
 
-# Copiamos los archivos del sitio estático al directorio HTML de NGINX
+# Copy static website files into NGINX’s HTML directory
 COPY src/web /usr/share/nginx/html
 
-# Establecemos un usuario no root por seguridad
+# Set up a non-root user for better security
 RUN adduser -D -g '' appuser \
     && chown -R appuser:appuser /usr/share/nginx/html
 USER appuser
 
-# Exponemos el puerto 80 (servido por NGINX)
+# Expose port 80 (served by NGINX)
 EXPOSE 80
 
-# Comprobación de salud (opcional para entornos locales)
+# Optional health check for local environments
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
   CMD wget -qO- http://localhost:80 > /dev/null || exit 1
 
-# Comando de inicio: ejecutar NGINX en primer plano
+# Startup command: run NGINX in the foreground
 CMD ["nginx", "-g", "daemon off;"]
-
