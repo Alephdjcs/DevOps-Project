@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: snapfinance
-        image: dcerdassan/devopssnapfinance:v1.0
+        image: dcerdassan/devopssnapfinance:latest   # ✅ última versión
+        imagePullPolicy: Always                        # fuerza a Kubernetes a descargar la última build
         ports:
         - containerPort: 80
         resources:
@@ -32,7 +33,7 @@ spec:
           httpGet:
             path: /
             port: 80
-          failureThreshold: 15   # will try for 2.5 minutes (15 x 10s)
+          failureThreshold: 15
           periodSeconds: 10
 
         # 👇 Liveness Probe — restarts the container if it hangs
