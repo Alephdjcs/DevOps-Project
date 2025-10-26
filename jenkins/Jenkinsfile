@@ -12,7 +12,6 @@ pipeline {
             steps {
                 echo "Cleaning workspace and cloning repo from GitHub (main branch)..."
                 deleteDir()
-                // Checkout main branch to get the application code
                 git branch: 'main',
                     url: 'https://github.com/Alephdjcs/devops-challenge.git',
                     credentialsId: 'github-token'
@@ -76,3 +75,21 @@ pipeline {
                 sh 'bash ${WORKSPACE}/jenkins/scripts/post_build.sh'
             }
         }
+
+        stage('Debug') {
+            steps {
+                echo "Checking file structure in workspace..."
+                sh 'ls -R ${WORKSPACE}/jenkins'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully."
+        }
+        failure {
+            echo "Pipeline failed. Check the logs."
+        }
+    }
+}
