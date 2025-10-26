@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: snapfinance
-        image: dcerdassan/devopssnapfinance:latest   # ✅ última versión
-        imagePullPolicy: Always                        # fuerza a Kubernetes a descargar la última build
+        image: dcerdassan/devopssnapfinance:latest   
+        imagePullPolicy: Always                        
         ports:
         - containerPort: 80
         resources:
