@@ -50,9 +50,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo "Building Docker image..."
+                    echo "Building Docker images..."
                     docker.build("${DOCKER_IMAGE}:${BUILD_TAG}", "./application")
-                    echo "Docker image built: ${DOCKER_IMAGE}:${BUILD_TAG}"
+                    docker.build("${DOCKER_IMAGE}:latest", "./application")
+                    echo "Docker images built: ${DOCKER_IMAGE}:${BUILD_TAG} and ${DOCKER_IMAGE}:latest"
                 }
             }
         }
@@ -68,9 +69,10 @@ pipeline {
                         echo "Logging in to Docker Hub..."
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
 
-                        echo "Pushing Docker image to Docker Hub..."
+                        echo "Pushing Docker images to Docker Hub..."
                         sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
-                        echo "Image successfully pushed: ${DOCKER_IMAGE}:${BUILD_TAG}"
+                        sh "docker push ${DOCKER_IMAGE}:latest"
+                        echo "Images successfully pushed: ${DOCKER_IMAGE}:${BUILD_TAG}, ${DOCKER_IMAGE}:latest"
                     }
                 }
             }
