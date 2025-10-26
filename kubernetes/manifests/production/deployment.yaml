@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: snapfinance
-        image: dcerdassan/devopssnapfinance:v1.0
+        image: dcerdassan/devopssnapfinance:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
@@ -27,15 +28,13 @@ spec:
             memory: "128Mi"
             cpu: "100m"
 
-        # 👇 Startup Probe — ensures the app has enough time to start before other probes are applied
         startupProbe:
           httpGet:
             path: /
             port: 80
-          failureThreshold: 30   # will try for ~5 minutes (30 x 10s)
+          failureThreshold: 30
           periodSeconds: 10
 
-        # 👇 Liveness Probe — restarts the container if it stops responding
         livenessProbe:
           httpGet:
             path: /
@@ -45,7 +44,6 @@ spec:
           timeoutSeconds: 5
           failureThreshold: 3
 
-        # 👇 Readiness Probe — controls when the pod is ready to receive traffic
         readinessProbe:
           httpGet:
             path: /
