@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "Cleaning workspace and cloning repo from GitHub (UAT branch)..."
-                deleteDir()  // Cleans the entire workspace before checkout
+                deleteDir()
                 git branch: 'UAT',
                     url: 'https://github.com/Alephdjcs/devops-challenge.git',
                     credentialsId: 'github-token'
@@ -54,6 +54,21 @@ pipeline {
             }
         }
 
+        stage('Cleanup Old Docker Images') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        echo "Running cleanup script for old Docker images..."
+                        sh 'bash ${WORKSPACE}/jenkins/scripts/cleanup_old_images.sh'
+                    }
+                }
+            }
+        }
+
         stage('Post-Build Script') {
             steps {
                 echo "Running Post-Build script..."
@@ -71,7 +86,7 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completed successfully!"
+            echo "Pipeline completed successfully."
         }
         failure {
             echo "Pipeline failed. Check the logs."
