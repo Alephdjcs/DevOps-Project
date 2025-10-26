@@ -27,15 +27,15 @@ spec:
             memory: "128Mi"
             cpu: "100m"
 
-        # 👇 Startup Probe — espera que la app levante correctamente antes de los otros probes
+        # 👇 Startup Probe — waits for the app to start properly before other probes run
         startupProbe:
           httpGet:
             path: /
             port: 80
-          failureThreshold: 15   # intentará durante 2.5 minutos (15 x 10s)
+          failureThreshold: 15   # will try for 2.5 minutes (15 x 10s)
           periodSeconds: 10
 
-        # 👇 Liveness Probe — reinicia el contenedor si se cuelga
+        # 👇 Liveness Probe — restarts the container if it hangs
         livenessProbe:
           httpGet:
             path: /
@@ -45,7 +45,7 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
 
-        # 👇 Readiness Probe — controla si el pod puede recibir tráfico
+        # 👇 Readiness Probe — checks if the pod is ready to receive traffic
         readinessProbe:
           httpGet:
             path: /
@@ -54,4 +54,3 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 2
           failureThreshold: 3
-
