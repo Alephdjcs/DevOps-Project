@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: snapfinance
-        image: dcerdassan/devopssnapfinance:latest   
-        imagePullPolicy: Always                        
+        image: dcerdassan/devopssnapfinance:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
@@ -28,7 +28,6 @@ spec:
             memory: "128Mi"
             cpu: "100m"
 
-        # 👇 Startup Probe — waits for the app to start properly before other probes run
         startupProbe:
           httpGet:
             path: /
@@ -36,7 +35,6 @@ spec:
           failureThreshold: 15
           periodSeconds: 10
 
-        # 👇 Liveness Probe — restarts the container if it hangs
         livenessProbe:
           httpGet:
             path: /
@@ -46,7 +44,6 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
 
-        # 👇 Readiness Probe — checks if the pod is ready to receive traffic
         readinessProbe:
           httpGet:
             path: /
@@ -55,3 +52,6 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 2
           failureThreshold: 3
+
+      imagePullSecrets:
+        - name: dockerhub-creds
