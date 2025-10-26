@@ -40,7 +40,7 @@ pipeline {
                         error "Required directory 'application/src/web' not found."
                     }
                     echo "Running pre-build script..."
-                    sh 'bash ${WORKSPACE}/jenkins/jenkins/scripts/pre_build.sh'
+                    sh 'bash ${WORKSPACE}/jenkins/scripts/pre_build.sh'
                 }
             }
         }
@@ -65,7 +65,6 @@ pipeline {
                     )]) {
                         echo "Logging in to Docker Hub..."
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-
                         echo "Pushing Docker image to Docker Hub..."
                         sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
                         echo "Image successfully pushed: ${DOCKER_IMAGE}:${BUILD_TAG}"
@@ -83,7 +82,7 @@ pipeline {
                         passwordVariable: 'DOCKER_PASS'
                     )]) {
                         echo "Running cleanup script for old Docker images..."
-                        sh 'bash ${WORKSPACE}/jenkins/jenkins/scripts/cleanup_old_images.sh'
+                        sh 'bash ${WORKSPACE}/jenkins/scripts/cleanup_old_images.sh'
                     }
                 }
             }
@@ -92,7 +91,7 @@ pipeline {
         stage('Post-Build Script') {
             steps {
                 echo "Running post-build script..."
-                sh 'bash ${WORKSPACE}/jenkins/jenkins/scripts/post_build.sh'
+                sh 'bash ${WORKSPACE}/jenkins/scripts/post_build.sh'
             }
         }
 
@@ -109,7 +108,4 @@ pipeline {
             echo "Pipeline completed successfully."
         }
         failure {
-            echo "Pipeline failed. Check the logs."
-        }
-    }
-}
+            echo "Pipel
