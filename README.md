@@ -7,7 +7,6 @@ This branch contains the **source code** for the sample web application.
 ```text
 .
 ├── application
-│   ├── docker-compose.yml
 │   ├── Dockerfile
 │   └── src
 │       └── web
