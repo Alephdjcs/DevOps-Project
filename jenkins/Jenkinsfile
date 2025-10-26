@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "dcerdassan/devopssnapfinance"
         BUILD_TAG = "${env.BUILD_NUMBER}"
+        SCRIPTS_DIR = "${WORKSPACE}/jenkins/jenkins/scripts"
     }
 
     stages {
@@ -35,7 +36,7 @@ pipeline {
         stage('Pre-Build Script') {
             steps {
                 echo "Running pre-build script..."
-                sh 'bash ${WORKSPACE}/jenkins/scripts/pre_build.sh'
+                sh "bash ${SCRIPTS_DIR}/pre_build.sh"
             }
         }
 
@@ -77,7 +78,7 @@ pipeline {
                         passwordVariable: 'DOCKER_PASS'
                     )]) {
                         echo "Running cleanup script for old Docker images..."
-                        sh 'bash ${WORKSPACE}/jenkins/scripts/cleanup_old_images.sh'
+                        sh "bash ${SCRIPTS_DIR}/cleanup_old_images.sh"
                     }
                 }
             }
@@ -86,7 +87,7 @@ pipeline {
         stage('Post-Build Script') {
             steps {
                 echo "Running post-build script..."
-                sh 'bash ${WORKSPACE}/jenkins/scripts/post_build.sh'
+                sh "bash ${SCRIPTS_DIR}/post_build.sh"
             }
         }
 
