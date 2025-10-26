@@ -1,9 +1,10 @@
 # DevOps Challenge – Application Code
 
-This branch contains the **source code** for the sample web application.  
+This branch contains the **source code** for the sample web application.
 
 ## Project Structure
 
+```text
 .
 ├── application
 │   ├── docker-compose.yml
@@ -59,6 +60,7 @@ This branch contains the **source code** for the sample web application.
 │           ├── responsive.css
 │           └── style.css
 └── README.md
+
 
 ## Quick Start (Local)
 
