@@ -4,24 +4,83 @@ pipeline {
     environment {
         DOCKER_IMAGE = "dcerdassan/devopssnapfinance"
         BUILD_TAG = "${env.BUILD_NUMBER}"
+        SCRIPTS_DIR = "${WORKSPACE}/jenkins/scripts"
     }
 
+    // Define reusable functions
+    // These functions reduce repetition (DRY principle)
+    // Groovy functions inside 'pipeline' require 'script { }' block to use
     stages {
 
-        stage('Checkout') {
+        stage('Setup Workspace') {
             steps {
-                echo "Cleaning workspace and cloning repo from GitHub (main branch)..."
-                deleteDir()
-                git branch: 'main',
-                    url: 'https://github.com/Alephdjcs/devops-challenge.git',
-                    credentialsId: 'github-token'
+                script {
+                    def checkoutRepo = { branch, targetDir ->
+                        dir(targetDir) {
+                            deleteDir()
+                            git branch: branch,
+                                url: 'https://github.com/Alephdjcs/devops-challenge.git',
+                                credentialsId: 'github-token'
+                        }
+                    }
+
+                    def runScript = { scriptName ->
+                        sh "bash ${SCRIPTS_DIR}/${scriptName}"
+                    }
+
+                    def dockerLoginPush = { image, tag ->
+                        withCredentials([usernamePassword(
+                            credentialsId: 'dockerhub-creds',
+                            usernameVariable: 'DOCKER_USER',
+                            passwordVariable: 'DOCKER_PASS'
+                        )]) {
+                            echo "Logging in to Docker Hub..."
+                            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+
+                            echo "Pushing Docker image to Docker Hub..."
+                            sh "docker push ${image}:${tag}"
+                            echo "Image successfully pushed: ${image}:${tag}"
+                        }
+                    }
+
+                    def cleanupDockerImages = {
+                        withCredentials([usernamePassword(
+                            credentialsId: 'dockerhub-creds',
+                            usernameVariable: 'DOCKER_USER',
+                            passwordVariable: 'DOCKER_PASS'
+                        )]) {
+                            echo "Cleaning up old Docker images..."
+                            runScript('cleanup_old_images.sh')
+                        }
+                    }
+
+                    // Save functions in the environment for later stages
+                    env.CHECKOUT_REPO = checkoutRepo
+                    env.RUN_SCRIPT = runScript
+                    env.DOCKER_PUSH = dockerLoginPush
+                    env.CLEANUP_DOCKER = cleanupDockerImages
+                }
+            }
+        }
+
+        stage('Checkout Code') {
+            steps {
+                script {
+                    echo "Checking out main branch (application)..."
+                    env.CHECKOUT_REPO('main', 'application')
+
+                    echo "Checking out UAT branch (jenkins scripts)..."
+                    env.CHECKOUT_REPO('UAT', 'jenkins')
+                }
             }
         }
 
         stage('Pre-Build Script') {
             steps {
-                echo "Running pre-build script..."
-                sh 'bash ${WORKSPACE}/jenkins/scripts/pre_build.sh'
+                script {
+                    echo "Running pre-build script..."
+                    env.RUN_SCRIPT('pre_build.sh')
+                }
             }
         }
 
@@ -38,18 +97,7 @@ pipeline {
         stage('Docker Login & Push') {
             steps {
                 script {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'dockerhub-creds',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
-                        echo "Logging in to Docker Hub..."
-                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-
-                        echo "Pushing Docker image to Docker Hub..."
-                        sh "docker push ${DOCKER_IMAGE}:${BUILD_TAG}"
-                        echo "Image successfully pushed: ${DOCKER_IMAGE}:${BUILD_TAG}"
-                    }
+                    env.DOCKER_PUSH(DOCKER_IMAGE, BUILD_TAG)
                 }
             }
         }
@@ -57,22 +105,17 @@ pipeline {
         stage('Cleanup Old Docker Images') {
             steps {
                 script {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'dockerhub-creds',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
-                        echo "Running cleanup script for old Docker images..."
-                        sh 'bash ${WORKSPACE}/jenkins/scripts/cleanup_old_images.sh'
-                    }
+                    env.CLEANUP_DOCKER()
                 }
             }
         }
 
         stage('Post-Build Script') {
             steps {
-                echo "Running post-build script..."
-                sh 'bash ${WORKSPACE}/jenkins/scripts/post_build.sh'
+                script {
+                    echo "Running post-build script..."
+                    env.RUN_SCRIPT('post_build.sh')
+                }
             }
         }
 
