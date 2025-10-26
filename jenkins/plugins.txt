@@ -1,13 +1,32 @@
-Git plugin
+# Jenkins Plugins Required
 
-Pipeline
+Below is the list of recommended Jenkins plugins for the CI/CD pipeline setup.
 
-Docker Pipeline
+## Essential Plugins
 
-Credentials Binding Plugin
+- **Git Plugin**  
+  Enables Jenkins to pull code from Git repositories.
 
-Kubernetes CLI Plugin (o Kubernetes si lo prefieres)
+- **Pipeline**  
+  Provides the pipeline functionality for defining build stages using a Jenkinsfile.
 
-Blue Ocean (opcional, UI)
+- **Docker Pipeline**  
+  Allows Jenkins to build and push Docker images directly within the pipeline.
 
-Warnings / Warnings Next Generation (opcional)
+- **Credentials Binding Plugin**  
+  Securely manages and injects credentials (e.g., tokens, usernames, passwords) into build environments.
+
+- **Kubernetes CLI Plugin** *(or simply **Kubernetes Plugin**, depending on your setup)*  
+  Provides integration with Kubernetes clusters for deployment and management tasks.
+
+## Optional Plugins
+
+- **Blue Ocean**  
+  Provides a modern, visual interface for Jenkins pipelines.
+
+- **Warnings / Warnings Next Generation**  
+  Displays and tracks static analysis warnings and code quality reports.
+
+---
+
+> 💡 **Tip:** After installing the plugins, restart Jenkins to ensure all dependencies load correctly.
