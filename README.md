@@ -35,22 +35,57 @@
 └── SETUP.md
 
 
-**Quick Start:**
+Quick Start:
 
-1. Clone the repository.  
-   The application container image is **built and pushed automatically** through a Jenkins CI/CD pipeline manually, [http://localhost:8090/login?from=%2F](http://localhost:8090/login?from=%2F)   
-2. Configure Minikube to use local Docker images:
+Start Minikube:
 
-    eval $(minikube \-p minikube docker-env)  
-3. Create namespaces and deploy the app:
+minikube start
 
-   kubectl create namespace staging  
-   kubectl create namespace production  
-   kubectl apply \-f kubernetes/manifests/staging \-n staging  
-   kubectl apply \-f kubernetes/manifests/production \-n production  
-4. Access services:
 
-   * Staging: http://192.168.49.2:32583
+Start the Jenkins container (replace <container_id> with your container ID):
 
-   * Production: http://192.168.49.2:31575
+docker start <container_id>
 
+
+Configure Minikube to use local Docker images:
+
+eval $(minikube -p minikube docker-env)
+
+
+Clone the repository.
+The application container image is built and pushed automatically through a Jenkins CI/CD pipeline: http://localhost:8090/login?from=%2F
+.
+
+Create namespaces and deploy the app:
+
+kubectl create namespace staging
+kubectl create namespace production
+kubectl apply -f kubernetes/manifests/staging -n staging
+kubectl apply -f kubernetes/manifests/production -n production
+
+
+Access services:
+
+Staging: http://192.168.49.2:32583
+
+Production: http://192.168.49.2:31575
+
+Jenkins CI/CD:
+
+The Jenkins pipeline is configured with a periodic trigger to run every 5 minutes.
+
+It automatically:
+
+Checks out the latest code from UAT.
+
+Builds the Docker image.
+
+Deploys to Kubernetes namespaces (staging and production).
+
+Pipeline logs are stored in jenkins/build_logs/build.log.
+
+Notes:
+
+Use this branch for testing, deployment, and CI/CD purposes.
+
+The main branch contains only the source code for development and local testing.
