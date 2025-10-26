@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_IMAGE = "dcerdassan/devopssnapfinance"
         BUILD_TAG = "${env.BUILD_NUMBER}"
-        SCRIPTS_DIR = "${WORKSPACE}/jenkins/jenkins/scripts"
     }
 
     stages {
@@ -35,8 +34,14 @@ pipeline {
 
         stage('Pre-Build Script') {
             steps {
-                echo "Running pre-build script..."
-                sh "bash ${SCRIPTS_DIR}/pre_build.sh"
+                echo "Checking application structure before running pre-build..."
+                script {
+                    if (!fileExists('application/src/web')) {
+                        error "Required directory 'application/src/web' not found."
+                    }
+                    echo "Running pre-build script..."
+                    sh 'bash ${WORKSPACE}/jenkins/jenkins/scripts/pre_build.sh'
+                }
             }
         }
 
@@ -78,7 +83,7 @@ pipeline {
                         passwordVariable: 'DOCKER_PASS'
                     )]) {
                         echo "Running cleanup script for old Docker images..."
-                        sh "bash ${SCRIPTS_DIR}/cleanup_old_images.sh"
+                        sh 'bash ${WORKSPACE}/jenkins/jenkins/scripts/cleanup_old_images.sh'
                     }
                 }
             }
@@ -87,7 +92,7 @@ pipeline {
         stage('Post-Build Script') {
             steps {
                 echo "Running post-build script..."
-                sh "bash ${SCRIPTS_DIR}/post_build.sh"
+                sh 'bash ${WORKSPACE}/jenkins/jenkins/scripts/post_build.sh'
             }
         }
 
