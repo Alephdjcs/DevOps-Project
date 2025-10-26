@@ -1,72 +1,18 @@
-## **DevOps Challenge – Kubernetes \+ Docker \+ Jenkins**
+## **DevOps Challenge – Kubernetes + Docker + Jenkins**
 
 **Objective:** Deploy a sample application using Docker, Kubernetes (Minikube), and a CI/CD pipeline with Jenkins.
 
 **Technologies Used:**
 
 * Docker & Docker Hub  
-* Kubernetes (WIth Minikube)  
+* Kubernetes (With Minikube)  
 * Jenkins  
-* Terraform (optional for infrastructure)   
 * CI/CD automation with Jenkinsfile  
-* Optional monitoring: Prometheus \+ Grafana
+* Optional monitoring: Prometheus + Grafana
 
 **Project Structure:**
 
-danilo@dcer:\~/Documents/devops-challenge$ tree  
-├── application  
-│   ├── docker-compose.yml  
-│   ├── Dockerfile  
-│   └── src  
-│       └── web  
-│           ├── css  
-│           │   ├── bootstrap.css  
-│           │   ├── flexslider.css  
-│           │   ├── font-awesome.min.css  
-│           │   ├── icofont.css  
-│           │   ├── jquery-ui.css  
-│           │   ├── jQuery.verticalCarousel.css  
-│           │   ├── owl.carousel.min.css  
-│           │   └── owl.theme.default.min.css  
-│           ├── fonts  
-│           │   ├── flexslider-icon.eot  
-│           │   ├── flexslider-icon.svg  
-│           │   ├── flexslider-icon.ttf  
-│           │   ├── flexslider-icon.woff  
-│           │   ├── FontAwesome.otf  
-│           │   ├── fontawesome-webfont.eot  
-│           │   ├── fontawesome-webfont.svg  
-│           │   ├── fontawesome-webfont.ttf  
-│           │   ├── fontawesome-webfont.woff  
-│           │   ├── fontawesome-webfont.woff2  
-│           │   ├── glyphicons-halflings-regular.eot  
-│           │   ├── glyphicons-halflings-regular.svg  
-│           │   ├── glyphicons-halflings-regular.ttf  
-│           │   ├── glyphicons-halflings-regular.woff  
-│           │   ├── glyphicons-halflings-regular.woff2  
-│           │   ├── icofont.eot  
-│           │   ├── icofont.svg  
-│           │   ├── icofont.ttf  
-│           │   └── icofont.woff  
-│           ├── img  
-│           │   ├── accordion1.jpg  
-│           │   ├── customar-\_area\_bg.jpg  
-│           │   ├── header-bg.jpg  
-│           │   ├── site-logo.png  
-│           │   ├── sliderr1.png  
-│           │   ├── vertical\_text\_images1.jpg  
-│           │   └── vertical\_text\_images.jpg  
-│           ├── index.html  
-│           ├── js  
-│           │   ├── active.js  
-│           │   ├── bootstrap.min.js  
-│           │   ├── jquery-3.1.1.min.js  
-│           │   ├── jquery.flexslider.js  
-│           │   ├── jquery-ui.js  
-│           │   ├── jQuery.verticalCarousel.js  
-│           │   └── owl.carousel.min.js  
-│           ├── responsive.css  
-│           └── style.css  
+```text
 ├── ARCHITECTURE.md  
 ├── docs  
 │   ├── best-practices.md  
@@ -75,8 +21,8 @@ danilo@dcer:\~/Documents/devops-challenge$ tree
 │   ├── Jenkinsfile  
 │   ├── plugins.txt  
 │   └── scripts  
-│       ├── post\_build.sh  
-│       └── pre\_build.sh  
+│       ├── post_build.sh  
+│       └── pre_build.sh  
 ├── kubernetes  
 │   └── manifests  
 │       ├── production  
@@ -86,12 +32,8 @@ danilo@dcer:\~/Documents/devops-challenge$ tree
 │           ├── deployment.yaml  
 │           └── service.yaml  
 ├── README.md  
-├── SETUP.md  
-└── terraform  
-    ├── main.tf  
-    ├── outputs.tf  
-    ├── variables.tf  
-    └── versions.tf
+└── SETUP.md
+
 
 **Quick Start:**
 
