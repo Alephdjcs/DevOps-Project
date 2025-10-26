@@ -2,7 +2,7 @@
 
 This branch contains the **source code** for the sample web application.
 
-## Project Structure
+# Project Structure
 
 ```text
 .
@@ -62,7 +62,7 @@ This branch contains the **source code** for the sample web application.
 └── README.md
 
 
-## Quick Start (Local)
+# Quick Start (Local)
 
 1. Clone the repository:
 ```bash
@@ -76,7 +76,7 @@ docker run -p 8080:80 myapp:latest
 http://localhost:8080
 
 
-## Notes
+# Notes
 
 This branch is intended for development and local testing only.
 
